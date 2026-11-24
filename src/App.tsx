@@ -500,7 +500,7 @@ export default function App() {
   const toastTimerRef = useRef<number>(0);
   const [openBar, setOpenBar] = useState<{ txt: string; web: boolean; uri?: string; mime: string } | null>(null);
   const [fallBarVisible, setFallBarVisible] = useState(false);
-  const lastSavedBlobRef = useRef<{ blob: Blob; filename: string; mime: string } | null>(null);
+  const lastSavedBlobRef = useRef<{ blob: Blob; filename: string; mime: string; folder?: string } | null>(null);
   const bkFileRef = useRef<HTMLInputElement>(null);
   const xlFileRef = useRef<HTMLInputElement>(null);
   const rowsBoxRef = useRef<HTMLDivElement>(null);
@@ -1922,8 +1922,9 @@ export default function App() {
     window.setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   };
 
-  const saveBlob = async (blob: Blob, filename: string, mime: string, mode?: "save" | "share") => {
-    lastSavedBlobRef.current = { blob, filename, mime };
+  // `folder` is a sub-folder created inside Downloads/حاسبة الشبابيك (one per project / export)
+  const saveBlob = async (blob: Blob, filename: string, mime: string, mode?: "save" | "share", folder?: string) => {
+    lastSavedBlobRef.current = { blob, filename, mime, folder };
     const winAny = window as unknown as {
       Capacitor?: {
         isNativePlatform?: () => boolean;
@@ -1976,16 +1977,18 @@ export default function App() {
           try {
             const out = await C.Plugins.SaveFile.save({
               filename,
+              folder: folder || "",
               mime: mime || "application/octet-stream",
               data: b64,
             });
+            const where = folder ? `«التنزيلات / حاسبة الشبابيك / ${folder}»` : "«التنزيلات / حاسبة الشبابيك»";
             setOpenBar({
-              txt: "✓ تم حفظ الملف في «التنزيلات / حاسبة الشبابيك»",
+              txt: `✓ تم حفظ الملف في ${where}`,
               web: false,
               uri: out?.uri,
               mime,
             });
-            toast("✓ تم حفظ الملف في «التنزيلات / حاسبة الشبابيك»");
+            toast(`✓ تم حفظ الملف في ${where}`);
             return;
           } catch {
             // fallback to Share / Filesystem
@@ -2087,7 +2090,8 @@ export default function App() {
         blob,
         `${fnBase()}.xlsx`,
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        mode
+        mode,
+        fnBase()
       );
     } catch {
       toast("تعذّر إنشاء ملف إكسل");
@@ -2252,7 +2256,7 @@ export default function App() {
         dupOther: res.dupOther,
         areaTotals: res.areaTotals,
       });
-      await saveBlob(blob, `${fnBase()}.pdf`, "application/pdf", mode);
+      await saveBlob(blob, `${fnBase()}.pdf`, "application/pdf", mode, fnBase());
     } catch {
       toast("تعذّر إنشاء ملف PDF");
     }
@@ -5160,7 +5164,7 @@ export default function App() {
                   getTabLines()
                     .map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
                     .join("\r\n");
-                saveBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), `${fnBase()}.csv`, "text/csv", "save");
+                saveBlob(new Blob([csv], { type: "text/csv;charset=utf-8" }), `${fnBase()}.csv`, "text/csv", "save", fnBase());
               }}
             >
               📄 ملف نصي CSV
@@ -5207,7 +5211,8 @@ export default function App() {
                 lastSavedBlobRef.current.blob,
                 lastSavedBlobRef.current.filename,
                 lastSavedBlobRef.current.mime,
-                "save"
+                "save",
+                lastSavedBlobRef.current.folder
               );
             }}
           >
@@ -5780,7 +5785,8 @@ export default function App() {
                     lastSavedBlobRef.current.blob,
                     lastSavedBlobRef.current.filename,
                     lastSavedBlobRef.current.mime,
-                    "share"
+                    "share",
+                    lastSavedBlobRef.current.folder
                   );
                 } else {
                   webDownload(lastSavedBlobRef.current.blob, lastSavedBlobRef.current.filename);

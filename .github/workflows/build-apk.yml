@@ -105,9 +105,21 @@ jobs:
                   return raw.replaceAll("[\\\\/:*?\"<>|\\u0000-\\u001f]+", "_").trim();
               }
 
+              private static String sanitizeFolder(String raw) {
+                  if (raw == null) {
+                      return "";
+                  }
+                  String s = raw.replaceAll("[\\\\/:*?\"<>|\\u0000-\\u001f]+", "_").trim();
+                  if (s.equals(".") || s.equals("..")) {
+                      return "";
+                  }
+                  return s;
+              }
+
               @PluginMethod
               public void save(PluginCall call) {
                   String filename = sanitizeName(call.getString("filename", "export.bin"));
+                  String folder = sanitizeFolder(call.getString("folder", ""));
                   String mime = call.getString("mime", "application/octet-stream");
                   String data = call.getString("data");
                   if (data == null || data.isEmpty()) {
@@ -123,7 +135,7 @@ jobs:
                               ContentValues values = new ContentValues();
                               values.put(MediaStore.Downloads.DISPLAY_NAME, filename);
                               values.put(MediaStore.Downloads.MIME_TYPE, mime);
-                              values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/حاسبة الشبابيك");
+                              values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/حاسبة الشبابيك" + (folder.isEmpty() ? "" : "/" + folder));
                               values.put(MediaStore.Downloads.IS_PENDING, 1);
                               Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
                               if (uri != null) {
@@ -143,7 +155,8 @@ jobs:
                       }
                       if (resultUri == null) {
                           File pubDownloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                          File targetDir = new File(pubDownloads, "حاسبة الشبابيك");
+                          File baseDir = new File(pubDownloads, "حاسبة الشبابيك");
+                          File targetDir = folder.isEmpty() ? baseDir : new File(baseDir, folder);
                           if (!targetDir.exists() && !targetDir.mkdirs()) {
                               targetDir = getContext().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
                               if (targetDir != null && !targetDir.exists()) targetDir.mkdirs();
