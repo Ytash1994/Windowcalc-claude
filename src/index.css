@@ -2447,7 +2447,7 @@ body.is-dragging {
 #toast {
   position: fixed;
   inset-inline: 16px;
-  bottom: calc(106px + env(safe-area-inset-bottom, 0px));
+  top: calc(12px + env(safe-area-inset-top, 0px));
   z-index: 90;
   background: #1d2733;
   color: #fff;
@@ -2458,7 +2458,7 @@ body.is-dragging {
   box-shadow: 0 6px 24px rgba(0, 0, 0, .35);
   pointer-events: none;
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(-10px);
   transition: .2s;
 }
 #toast.on {

@@ -1980,12 +1980,12 @@ export default function App() {
               data: b64,
             });
             setOpenBar({
-              txt: "✓ تم حفظ الملف في «التنزيلات / حاسبة القياسات»",
+              txt: "✓ تم حفظ الملف في «التنزيلات / حاسبة الشبابيك»",
               web: false,
               uri: out?.uri,
               mime,
             });
-            toast("✓ تم حفظ الملف في «التنزيلات»");
+            toast("✓ تم حفظ الملف في «التنزيلات / حاسبة الشبابيك»");
             return;
           } catch {
             // fallback to Share / Filesystem
@@ -2012,13 +2012,16 @@ export default function App() {
     });
   };
 
+  // File name: "<project name>_<date>", or "<window type>_<date>" when no project name is set
   const fnBase = () => {
-    const nm = pjName
-      .replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-      .slice(0, 60);
-    return nm || `نتائج_القياسات_${dstr()}`;
+    const clean = (s: string) =>
+      String(s || "")
+        .replace(/[\\/:*?"<>|\u0000-\u001f]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 60);
+    const label = clean(pjName) || clean(state.type) || "نتائج";
+    return `${label}_${dstr()}`;
   };
 
   const exportNotes = () => {
