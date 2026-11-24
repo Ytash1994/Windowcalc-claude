@@ -144,10 +144,11 @@ export const DEF_TYPE_DEFS: Record<string, TypeDef> = {
 };
 
 export const TYPE_SUBS: Record<string, { sub: string; iconKey: "a" | "b" | "c" | "d" | "e" }> = {
-  "شباك 3 مجاري نظامي": { sub: "مع صندوق وكشفة وحصيرة", iconKey: "a" },
-  "شباك 2.5 نظامي": { sub: "مع صندوق وملحقات (بدون F)", iconKey: "c" },
-  "واجهات 2.5 بدون صندوق": { sub: "جنب الحلق = الطول + كشفة", iconKey: "b" },
-  "شباك 3 مجاري بدون صندوق": { sub: "جنب الحلق = الطول (بدون ملحقات)", iconKey: "d" },
+  // The four built-in types show only their name (empty sub = no description line)
+  "شباك 3 مجاري نظامي": { sub: "", iconKey: "a" },
+  "شباك 2.5 نظامي": { sub: "", iconKey: "c" },
+  "واجهات 2.5 بدون صندوق": { sub: "", iconKey: "b" },
+  "شباك 3 مجاري بدون صندوق": { sub: "", iconKey: "d" },
 };
 
 export const BASE_HUE: Record<string, number> = {

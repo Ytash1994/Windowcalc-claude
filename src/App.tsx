@@ -3264,7 +3264,7 @@ export default function App() {
                       <TypeIcon iconKey={cat.TINFO[n]?.iconKey || "d"} />
                       <span>
                         <b>{n}</b>
-                        <small>{cat.TINFO[n]?.sub || ""}</small>
+                        {cat.TINFO[n]?.sub ? <small>{cat.TINFO[n].sub}</small> : null}
                       </span>
                       <span className="tick">✓</span>
                     </button>
