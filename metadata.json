@@ -1,0 +1,6 @@
+{
+  "name": "حاسبة الشبابيك",
+  "description": "حاسبة قياسات الشبابيك والواجهات — حساب المقاسات بدقة وتصدير Excel وPDF",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
